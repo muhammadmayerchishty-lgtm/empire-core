@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
 
-interface EmpireCanvasProps {
+export interface EmpireCanvasProps {
   totalFrames?: number;
   initialFramesCount?: number;
   scrollDistance?: number;
@@ -9,7 +9,7 @@ interface EmpireCanvasProps {
   frameExt?: string;
   folderPath?: string;
   children?: React.ReactNode;
-  onFrameChange?: (frame: any, progress: any) => void;
+  onFrameChange?: (...args: any[]) => void;
 }
 
 export default function EmpireCanvas({
@@ -85,7 +85,7 @@ export default function EmpireCanvas({
 
   useEffect(() => {
     let rafId: number;
-    const handleScroll = () => {dobara
+    const handleScroll = () => {
       const scrollTop = window.scrollY;
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
       const scrollFraction = maxScroll > 0 ? scrollTop / maxScroll : 0;
@@ -122,7 +122,7 @@ export default function EmpireCanvas({
   }, []);
 
   return (
-    <div className="relative w-full h-[700vh] bg-[#050505]">
+    <div className={`relative w-full bg-[#050505]`} style={{ height: `${scrollDistance}vh` }}>
       <div className="sticky top-0 w-full h-screen overflow-hidden">
         <canvas ref={canvasRef} className="block w-full h-full object-cover" />
         {children}
