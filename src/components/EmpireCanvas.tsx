@@ -3,15 +3,19 @@ import React, { useEffect, useRef, useState } from 'react';
 
 interface EmpireCanvasProps {
   totalFrames?: number;
+  initialFramesCount?: number;
+  scrollDistance?: number;
   framePrefix?: string;
   frameExt?: string;
   folderPath?: string;
   children?: React.ReactNode;
-  onFrameChange?: (frame: number, progress: number) => void;
+  onFrameChange?: (frame: any, progress: any) => void;
 }
 
 export default function EmpireCanvas({
   totalFrames = 1440,
+  initialFramesCount = 60,
+  scrollDistance = 700,
   framePrefix = 'frame_',
   frameExt = 'jpg',
   folderPath = '/frames',
@@ -30,7 +34,7 @@ export default function EmpireCanvas({
     imagesRef.current = imgArray;
 
     let loaded = 0;
-    const batchSize = 60;
+    const batchSize = initialFramesCount || 60;
 
     const loadBatch = async (startIdx: number) => {
       for (let i = startIdx; i < Math.min(startIdx + batchSize, totalFrames); i++) {
@@ -59,7 +63,7 @@ export default function EmpireCanvas({
     return () => {
       isCancelled = true;
     };
-  }, [totalFrames, folderPath, framePrefix, frameExt]);
+  }, [totalFrames, folderPath, framePrefix, frameExt, initialFramesCount]);
 
   const renderFrame = (index: number) => {
     const canvas = canvasRef.current;
@@ -81,7 +85,7 @@ export default function EmpireCanvas({
 
   useEffect(() => {
     let rafId: number;
-    const handleScroll = () => {
+    const handleScroll = () => {dobara
       const scrollTop = window.scrollY;
       const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
       const scrollFraction = maxScroll > 0 ? scrollTop / maxScroll : 0;
