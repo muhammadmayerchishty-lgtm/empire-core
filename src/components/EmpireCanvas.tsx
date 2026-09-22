@@ -6,13 +6,17 @@ interface EmpireCanvasProps {
   framePrefix?: string;
   frameExt?: string;
   folderPath?: string;
+  children?: React.ReactNode;
+  onFrameChange?: (frame: number, progress: number) => void;
 }
 
 export default function EmpireCanvas({
   totalFrames = 1440,
-  framePrefix = 'frame_', // Agar frames ka naam 0001.jpg format me hai (prefix bina), toh isko "" kar dena
+  framePrefix = 'frame_',
   frameExt = 'jpg',
   folderPath = '/frames',
+  children,
+  onFrameChange,
 }: EmpireCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [loadedCount, setLoadedCount] = useState(0);
@@ -86,7 +90,10 @@ export default function EmpireCanvas({
       if (targetFrame !== currentFrameRef.current) {
         currentFrameRef.current = targetFrame;
         cancelAnimationFrame(rafId);
-        rafId = requestAnimationFrame(() => renderFrame(targetFrame));
+        rafId = requestAnimationFrame(() => {
+          renderFrame(targetFrame);
+          onFrameChange?.(targetFrame, scrollFraction);
+        });
       }
     };
 
@@ -95,7 +102,7 @@ export default function EmpireCanvas({
       window.removeEventListener('scroll', handleScroll);
       cancelAnimationFrame(rafId);
     };
-  }, [totalFrames]);
+  }, [totalFrames, onFrameChange]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -114,6 +121,7 @@ export default function EmpireCanvas({
     <div className="relative w-full h-[700vh] bg-[#050505]">
       <div className="sticky top-0 w-full h-screen overflow-hidden">
         <canvas ref={canvasRef} className="block w-full h-full object-cover" />
+        {children}
         {!isReady && (
           <div className="absolute inset-0 bg-black/90 flex flex-col items-center justify-center text-cyan-400 font-mono text-sm tracking-widest z-50">
             <span>EXTRACTING CORE EMPIRE MATRIX...</span>
